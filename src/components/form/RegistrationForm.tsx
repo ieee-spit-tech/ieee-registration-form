@@ -25,9 +25,11 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     skills: "",
     openToOtherCommittee: "",
   });
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string>("");
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
@@ -63,10 +65,37 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
       setErrors(newErrors);
       return;
     }
+    
     setIsSubmitting(true);
+    setSubmitError("");
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Create FormData object for file upload
+      const formDataToSend = new FormData();
+      
+      // Add all form fields
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
+      });
+      
+      // Add resume file if present
+      if (resumeFile) {
+        formDataToSend.append('resume', resumeFile);
+      }
+
+      // Send to API
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Registration failed');
+      }
+
+      // Success
       setSubmitted(true);
       setFormData({
         name: "",
@@ -82,7 +111,14 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
         skills: "",
         openToOtherCommittee: "",
       });
-    }, 1500);
+      setResumeFile(null);
+
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      setSubmitError(error.message || 'Registration failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -261,12 +297,18 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                           if (file && file.size > 10 * 1024 * 1024) {
                             alert("File size exceeds 10 MB limit.");
                             e.target.value = "";
+                            setResumeFile(null);
                           } else {
-                            // Optionally handle file upload logic here
+                            setResumeFile(file);
                           }
                         }}
                       />
                       <span className="text-xs text-slate-400 mt-1">Upload 1 supported file. Max 10 MB.</span>
+                      {resumeFile && (
+                        <span className="text-xs text-cyan-400 mt-1">
+                          Selected: {resumeFile.name} ({(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                      )}
                     </div>
                     <div className="flex flex-col mt-4">
                       <label className="text-sm font-medium text-slate-200 mb-1">
@@ -305,6 +347,11 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                     <div className="flex justify-center pt-4">
                       <SubmitButton isLoading={isSubmitting} label="Register" />
                     </div>
+                    {submitError && (
+                      <div className="mt-4 p-3 bg-red-900/50 border border-red-500 rounded-md">
+                        <p className="text-red-300 text-sm text-center">{submitError}</p>
+                      </div>
+                    )}
                   </form>
                 </div>
               </>
@@ -319,6 +366,7 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                 <button
                   onClick={() => {
                     setSubmitted(false);
+                    setSubmitError("");
                     onClose();
                   }}
                   className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold px-6 py-2 rounded-md"
