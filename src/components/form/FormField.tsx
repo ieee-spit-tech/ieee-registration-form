@@ -1,7 +1,7 @@
 "use client";
 
 interface FormFieldProps {
-  label: string;
+  label: React.ReactNode;
   type: string;
   name: string;
   value: string;
@@ -9,6 +9,7 @@ interface FormFieldProps {
   error?: string;
   placeholder?: string;
   options?: string[]; // for select dropdowns
+  required?: boolean;
 }
 
 const FormField = ({
@@ -20,6 +21,7 @@ const FormField = ({
   error,
   placeholder,
   options,
+  required,
 }: FormFieldProps) => {
   return (
     <div className="flex flex-col">
@@ -34,6 +36,7 @@ const FormField = ({
           value={value}
           onChange={onChange}
           className="px-3 py-2 rounded-md bg-slate-800 text-slate-100 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
+          required={required}
         >
           <option value="">Select {label}</option>
           {options?.map((opt) => (
@@ -51,6 +54,7 @@ const FormField = ({
           onChange={onChange}
           placeholder={placeholder}
           className="px-3 py-2 rounded-md bg-slate-800 text-slate-100 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
+          required={required}
         />
       )}
 
