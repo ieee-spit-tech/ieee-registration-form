@@ -13,12 +13,8 @@ export interface IRegistration extends Document {
   motivation: string;
   skills: string;
   openToOtherCommittee: string;
-  resume?: {
-    filename: string;
-    contentType: string;
-    data: string; // base64 encoded file data
-    size: number;
-  };
+  eventIdea: string;
+  resumeDriveLink?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -119,22 +115,22 @@ const RegistrationSchema: Schema = new Schema(
       required: [true, 'This field is required'],
       enum: ['Yes', 'No']
     },
-    resume: {
-      filename: {
-        type: String,
-        default: null
-      },
-      contentType: {
-        type: String,
-        default: null
-      },
-      data: {
-        type: String, // base64 encoded file
-        default: null
-      },
-      size: {
-        type: Number,
-        default: null
+    eventIdea: {
+      type: String,
+      required: [true, 'Event idea is required'],
+      trim: true,
+      maxlength: [500, 'Event idea cannot exceed 500 characters']
+    },
+    resumeDriveLink: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function(v: string) {
+          if (!v) return true; // Optional field
+          // Validate Google Drive link format
+          return /^https:\/\/(drive\.google\.com|docs\.google\.com)\//.test(v);
+        },
+        message: 'Please provide a valid Google Drive link'
       }
     }
   },
@@ -149,17 +145,6 @@ const RegistrationSchema: Schema = new Schema(
 RegistrationSchema.index({ email: 1 });
 RegistrationSchema.index({ uid: 1 });
 RegistrationSchema.index({ createdAt: -1 });
-
-// Virtual to get resume size in human readable format
-RegistrationSchema.virtual('resumeSizeFormatted').get(function(this: IRegistration) {
-  if (!this.resume?.size) return null;
-  const bytes = this.resume.size;
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-});
 
 // Prevent model re-compilation during development
 export default mongoose.models.Registration || mongoose.model<IRegistration>('Registration', RegistrationSchema);

@@ -24,61 +24,15 @@ export async function POST(request: NextRequest) {
       motivation: formData.get('motivation') as string,
       skills: formData.get('skills') as string,
       openToOtherCommittee: formData.get('openToOtherCommittee') as string,
-    };
-
-    // Handle resume file if present
-    const resumeFile = formData.get('resume') as File | null;
-    let resumeData: any = undefined;
-    
-    if (resumeFile && resumeFile.size > 0) {
-      // Check file size (10MB limit)
-      if (resumeFile.size > 10 * 1024 * 1024) {
-        return NextResponse.json(
-          { error: 'Resume file size exceeds 10MB limit' },
-          { status: 400 }
-        );
-      }
-
-      // Check file type
-      const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.oasis.opendocument.text',
-        'application/rtf',
-        'text/plain'
-      ];
-
-      if (!allowedTypes.includes(resumeFile.type)) {
-        return NextResponse.json(
-          { error: 'Invalid file type. Please upload PDF, DOC, DOCX, ODT, RTF, or TXT files only.' },
-          { status: 400 }
-        );
-      }
-
-      // Convert file to base64
-      const buffer = await resumeFile.arrayBuffer();
-      const base64Data = Buffer.from(buffer).toString('base64');
-
-      resumeData = {
-        filename: resumeFile.name,
-        contentType: resumeFile.type,
-        data: base64Data,
-        size: resumeFile.size
-      };
-    }
-
-    // Create the complete registration data object
-    const completeRegistrationData: any = {
-      ...registrationData,
-      ...(resumeData && { resume: resumeData })
+      eventIdea: formData.get('eventIdea') as string,
+      resumeDriveLink: formData.get('resumeDriveLink') as string,
     };
 
     // Validate required fields
     const requiredFields = [
       'name', 'email', 'phone', 'uid', 'branch', 'year',
       'preference1', 'preference2', 'preference3',
-      'motivation', 'skills', 'openToOtherCommittee'
+      'motivation', 'skills', 'openToOtherCommittee', 'eventIdea'
     ];
 
     for (const field of requiredFields) {
@@ -112,6 +66,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate Google Drive link if provided
+    if (registrationData.resumeDriveLink && 
+        !/^https:\/\/(drive\.google\.com|docs\.google\.com)\//.test(registrationData.resumeDriveLink)) {
+      return NextResponse.json(
+        { error: 'Please provide a valid Google Drive link' },
+        { status: 400 }
+      );
+    }
+
     // Check if UID already exists
     const existingRegistration = await Registration.findOne({ uid: registrationData.uid });
     if (existingRegistration) {
@@ -131,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new registration
-    const registration = new Registration(completeRegistrationData);
+    const registration = new Registration(registrationData);
     await registration.save();
 
     // Return success response (without sensitive data)
@@ -141,7 +104,7 @@ export async function POST(request: NextRequest) {
       email: registration.email,
       uid: registration.uid,
       createdAt: registration.createdAt,
-      hasResume: !!registration.resume?.filename
+      hasResume: !!registration.resumeDriveLink
     };
 
     return NextResponse.json(

@@ -24,8 +24,9 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     motivation: "",
     skills: "",
     openToOtherCommittee: "",
+    eventIdea: "",
+    resumeDriveLink: "",
   });
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -48,6 +49,14 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     if (!formData.motivation.trim()) newErrors.motivation = "This field is required.";
     if (!formData.skills.trim()) newErrors.skills = "This field is required.";
     if (!formData.openToOtherCommittee) newErrors.openToOtherCommittee = "This field is required.";
+    if (!formData.eventIdea.trim()) newErrors.eventIdea = "Event idea is required.";
+    
+    // Validate Google Drive link if provided
+    if (formData.resumeDriveLink.trim() && 
+        !/^https:\/\/(drive\.google\.com|docs\.google\.com)\//.test(formData.resumeDriveLink)) {
+      newErrors.resumeDriveLink = "Please provide a valid Google Drive link.";
+    }
+    
     return newErrors;
   };
 
@@ -70,18 +79,13 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     setSubmitError("");
 
     try {
-      // Create FormData object for file upload
+      // Create FormData object
       const formDataToSend = new FormData();
       
       // Add all form fields
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
-      
-      // Add resume file if present
-      if (resumeFile) {
-        formDataToSend.append('resume', resumeFile);
-      }
 
       // Send to API
       const response = await fetch('/api/register', {
@@ -110,8 +114,9 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
         motivation: "",
         skills: "",
         openToOtherCommittee: "",
+        eventIdea: "",
+        resumeDriveLink: "",
       });
-      setResumeFile(null);
 
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -281,35 +286,36 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                         <span className="text-red-400 text-xs mt-1">{errors.skills}</span>
                       )}
                     </div>
-                    {/* Resume Upload Field */}
+
+                    {/* Event Idea Field */}
                     <div className="flex flex-col">
-                      <label htmlFor="resume" className="text-sm font-medium text-slate-200 mb-1">
-                        Resume (only for Deputy Tech Head)
+                      <label htmlFor="eventIdea" className="text-sm font-medium text-slate-200 mb-1">
+                        If you want to organize any event, what would it be? <span className="text-red-400">*</span>
                       </label>
-                      <input
-                        id="resume"
-                        name="resume"
-                        type="file"
-                        accept=".pdf,.doc,.docx,.odt,.rtf,.txt"
-                        className="file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 bg-slate-800 text-slate-100 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-                        onChange={(e) => {
-                          const file = e.target.files && e.target.files[0];
-                          if (file && file.size > 10 * 1024 * 1024) {
-                            alert("File size exceeds 10 MB limit.");
-                            e.target.value = "";
-                            setResumeFile(null);
-                          } else {
-                            setResumeFile(file);
-                          }
-                        }}
+                      <textarea
+                        id="eventIdea"
+                        name="eventIdea"
+                        value={formData.eventIdea}
+                        onChange={handleChange}
+                        className="px-3 py-2 rounded-md bg-slate-800 text-slate-100 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition min-h-[80px] resize-y"
+                        placeholder="Describe the event you would like to organize..."
+                        required
                       />
-                      <span className="text-xs text-slate-400 mt-1">Upload 1 supported file. Max 10 MB.</span>
-                      {resumeFile && (
-                        <span className="text-xs text-cyan-400 mt-1">
-                          Selected: {resumeFile.name} ({(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
+                      {errors.eventIdea && (
+                        <span className="text-red-400 text-xs mt-1">{errors.eventIdea}</span>
                       )}
                     </div>
+
+                    {/* Resume Google Drive Link Field */}
+                    <FormField
+                      label="Resume Google Drive Link (only for Deputy Tech Head)"
+                      type="text"
+                      name="resumeDriveLink"
+                      value={formData.resumeDriveLink}
+                      onChange={handleChange}
+                      error={errors.resumeDriveLink}
+                      placeholder="https://drive.google.com/file/d/..."
+                    />
                     <div className="flex flex-col mt-4">
                       <label className="text-sm font-medium text-slate-200 mb-1">
                         Are you open to joining any other committee? <span className="text-red-400">*</span>
