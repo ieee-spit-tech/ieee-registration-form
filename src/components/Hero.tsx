@@ -18,9 +18,13 @@ const Hero = ({ onOpen }: { onOpen: () => void }) => {
           className="w-28 h-28 mx-auto mb-8 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-700 flex items-center justify-center shadow-[0_0_30px_rgba(0,212,255,0.3)]"
         >
           <img
-            src="https://ieee.spit.ac.in/assets/ieee-BladhgC_.png"
+            src="/ieee_logo.png"
             alt="IEEE SPIT"
             className="h-26 w-auto brightness-110"
+            width={104}
+            height={104}
+            loading="eager"
+            style={{ display: 'block' }}
           />
         </motion.div>
 

@@ -12,9 +12,13 @@ const Header = () => {
       {/* Logo + Title */}
       <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-3">
         <img
-          src="https://ieee.spit.ac.in/assets/ieee-BladhgC_.png"
+          src="/ieee_logo.png"
           alt="IEEE SPIT Logo"
           className="h-10 w-auto"
+          width={40}
+          height={40}
+          loading="eager"
+          style={{ display: 'block' }}
         />
         <span className="text-lg font-semibold text-white tracking-wide">
           IEEE SPIT

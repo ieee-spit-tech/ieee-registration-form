@@ -15,9 +15,7 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     name: "",
     email: "",
     phone: "",
-    uid: "",
     branch: "",
-    year: "",
     preference1: "",
     preference2: "",
     preference3: "",
@@ -25,7 +23,6 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     skills: "",
     openToOtherCommittee: "",
     eventIdea: "",
-    resumeDriveLink: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,10 +36,9 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
       newErrors.email = "Enter a valid email.";
     if (!formData.phone.trim() || !/^\d{10}$/.test(formData.phone))
       newErrors.phone = "Enter a valid 10-digit phone number.";
-    if (!formData.uid.trim() || formData.uid.length !== 10)
-      newErrors.uid = "UID (Roll number) must be 10 characters.";
+    // UID validation removed
     if (!formData.branch) newErrors.branch = "Branch is required.";
-    if (!formData.year) newErrors.year = "Year is required.";
+    // Year validation removed
     if (!formData.preference1) newErrors.preference1 = "Preference 1 is required.";
     if (!formData.preference2) newErrors.preference2 = "Preference 2 is required.";
     if (!formData.preference3) newErrors.preference3 = "Preference 3 is required.";
@@ -50,13 +46,9 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     if (!formData.skills.trim()) newErrors.skills = "This field is required.";
     if (!formData.openToOtherCommittee) newErrors.openToOtherCommittee = "This field is required.";
     if (!formData.eventIdea.trim()) newErrors.eventIdea = "Event idea is required.";
-    
-    // Validate Google Drive link if provided
-    if (formData.resumeDriveLink.trim() && 
-        !/^https:\/\/(drive\.google\.com|docs\.google\.com)\//.test(formData.resumeDriveLink)) {
-      newErrors.resumeDriveLink = "Please provide a valid Google Drive link.";
-    }
-    
+
+    // Resume Google Drive link validation removed
+
     return newErrors;
   };
 
@@ -74,14 +66,14 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
       setErrors(newErrors);
       return;
     }
-    
+
     setIsSubmitting(true);
     setSubmitError("");
 
     try {
       // Create FormData object
       const formDataToSend = new FormData();
-      
+
       // Add all form fields
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
@@ -105,9 +97,7 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
         name: "",
         email: "",
         phone: "",
-        uid: "",
         branch: "",
-        year: "",
         preference1: "",
         preference2: "",
         preference3: "",
@@ -115,7 +105,6 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
         skills: "",
         openToOtherCommittee: "",
         eventIdea: "",
-        resumeDriveLink: "",
       });
 
     } catch (error: any) {
@@ -186,18 +175,9 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                       placeholder="10-digit phone number"
                       required
                     />
+                    {/* UID (Roll number) field removed */}
                     <FormField
-                      label={<span>UID (Roll number) <span className="text-red-400">*</span></span>}
-                      type="text"
-                      name="uid"
-                      value={formData.uid}
-                      onChange={handleChange}
-                      error={errors.uid}
-                      placeholder="10-character roll number"
-                      required
-                    />
-                    <FormField
-                      label={<span>Branch <span className="text-red-400">*</span></span>}
+                      label={<span>Branch <span className="text-red-400"></span></span>}
                       type="select"
                       name="branch"
                       value={formData.branch}
@@ -207,44 +187,36 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                       required
                     />
                     <FormField
-                      label={<span>Preference 1 <span className="text-red-400">*</span></span>}
+                      label={<span>Preference 1 <span className="text-red-400"></span></span>}
                       type="select"
                       name="preference1"
                       value={formData.preference1}
                       onChange={handleChange}
                       error={errors.preference1}
-                      options={["Marketing Head", "Event Head", "Creative head", "Head Of Subcomm", "Deputy Tech Head", "Head of Public Relations", "Head of Operations", "Social Media Manager"]}
+                      options={["Marketing", "Creative", "Public Relations", "Operations", "Technical"]}
                       required
                     />
                     <FormField
-                      label={<span>Preference 2 <span className="text-red-400">*</span></span>}
+                      label={<span>Preference 2 <span className="text-red-400"></span></span>}
                       type="select"
                       name="preference2"
                       value={formData.preference2}
                       onChange={handleChange}
                       error={errors.preference2}
-                      options={["Marketing Head", "Event Head", "Creative head", "Head Of Subcomm", "Deputy Tech Head", "Head of Public Relations", "Head of Operations", "Social Media Manager"]}
+                      options={["Marketing", "Creative", "Public Relations", "Operations", "Technical"]}
                       required
                     />
                     <FormField
-                      label={<span>Preference 3 <span className="text-red-400">*</span></span>}
+                      label={<span>Preference 3 <span className="text-red-400"></span></span>}
                       type="select"
                       name="preference3"
                       value={formData.preference3}
                       onChange={handleChange}
                       error={errors.preference3}
-                      options={["Marketing Head", "Event Head", "Creative head", "Head Of Subcomm", "Deputy Tech Head", "Head of Public Relations", "Head of Operations", "Social Media Manager"]}
+                      options={["Marketing", "Creative", "Public Relations", "Operations", "Technical"]}
                       required
                     />
-                    <FormField
-                      label="Year"
-                      type="select"
-                      name="year"
-                      value={formData.year}
-                      onChange={handleChange}
-                      error={errors.year}
-                      options={["FE", "SE", "TE"]}
-                    />
+                    {/* Year field removed */}
 
                     {/* Open to Other Committee Field (moved to last) */}
                     {/* SubmitButton will now come after this field */}
@@ -271,7 +243,7 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                     {/* Skills/Experience Field */}
                     <div className="flex flex-col">
                       <label htmlFor="skills" className="text-sm font-medium text-slate-200 mb-1">
-                        Mention the skills that you would bring in to contribute to the position that you applied for? (Also add experience of previous committees) <span className="text-red-400">*</span>
+                        Mention the skills that you would bring in to contribute to the position that you applied for?<span className="text-red-400">*</span>
                       </label>
                       <textarea
                         id="skills"
@@ -306,16 +278,7 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                       )}
                     </div>
 
-                    {/* Resume Google Drive Link Field */}
-                    <FormField
-                      label="Resume Google Drive Link (only for Deputy Tech Head)"
-                      type="text"
-                      name="resumeDriveLink"
-                      value={formData.resumeDriveLink}
-                      onChange={handleChange}
-                      error={errors.resumeDriveLink}
-                      placeholder="https://drive.google.com/file/d/..."
-                    />
+                    {/* Resume Google Drive Link field removed */}
                     <div className="flex flex-col mt-4">
                       <label className="text-sm font-medium text-slate-200 mb-1">
                         Are you open to joining any other committee? <span className="text-red-400">*</span>
