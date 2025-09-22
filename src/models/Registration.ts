@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface IRegistration extends Document {
   name: string;
@@ -18,6 +19,12 @@ export interface IRegistration extends Document {
 
 const RegistrationSchema: Schema = new Schema(
   {
+    uid: {
+      type: String,
+      unique: true,
+      required: true,
+      default: () => uuidv4(),
+    },
     name: {
       type: String,
       required: [true, 'Name is required'],
