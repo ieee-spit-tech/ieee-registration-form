@@ -36,9 +36,7 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
       newErrors.email = "Enter a valid email.";
     if (!formData.phone.trim() || !/^\d{10}$/.test(formData.phone))
       newErrors.phone = "Enter a valid 10-digit phone number.";
-    // UID validation removed
     if (!formData.branch) newErrors.branch = "Branch is required.";
-    // Year validation removed
     if (!formData.preference1) newErrors.preference1 = "Preference 1 is required.";
     if (!formData.preference2) newErrors.preference2 = "Preference 2 is required.";
     if (!formData.preference3) newErrors.preference3 = "Preference 3 is required.";
@@ -46,8 +44,6 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
     if (!formData.skills.trim()) newErrors.skills = "This field is required.";
     if (!formData.openToOtherCommittee) newErrors.openToOtherCommittee = "This field is required.";
     if (!formData.eventIdea.trim()) newErrors.eventIdea = "Event idea is required.";
-
-    // Resume Google Drive link validation removed
 
     return newErrors;
   };
@@ -175,7 +171,6 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                       placeholder="10-digit phone number"
                       required
                     />
-                    {/* UID (Roll number) field removed */}
                     <FormField
                       label={<span>Branch <span className="text-red-400"></span></span>}
                       type="select"
@@ -216,7 +211,6 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                       options={["Marketing", "Creative", "Public Relations", "Operations", "Technical"]}
                       required
                     />
-                    {/* Year field removed */}
 
                     {/* Open to Other Committee Field (moved to last) */}
                     {/* SubmitButton will now come after this field */}
@@ -278,7 +272,6 @@ const RegistrationForm = ({ isOpen, onClose }: RegistrationFormProps) => {
                       )}
                     </div>
 
-                    {/* Resume Google Drive Link field removed */}
                     <div className="flex flex-col mt-4">
                       <label className="text-sm font-medium text-slate-200 mb-1">
                         Are you open to joining any other committee? <span className="text-red-400">*</span>

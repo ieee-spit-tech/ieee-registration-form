@@ -4,9 +4,7 @@ export interface IRegistration extends Document {
   name: string;
   email: string;
   phone: string;
-  uid: string;
   branch: string;
-  year: string;
   preference1: string;
   preference2: string;
   preference3: string;
@@ -14,7 +12,6 @@ export interface IRegistration extends Document {
   skills: string;
   openToOtherCommittee: string;
   eventIdea: string;
-  resumeDriveLink?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,63 +36,42 @@ const RegistrationSchema: Schema = new Schema(
       required: [true, 'Phone number is required'],
       match: [/^\d{10}$/, 'Phone number must be exactly 10 digits']
     },
-    uid: {
-      type: String,
-      required: [true, 'UID (Roll number) is required'],
-      length: [10, 'UID must be exactly 10 characters'],
-      unique: true,
-      trim: true
-    },
     branch: {
       type: String,
       required: [true, 'Branch is required'],
       enum: ['CE', 'CSE', 'EXTC']
     },
-    year: {
-      type: String,
-      required: [true, 'Year is required'],
-      enum: ['FE', 'SE', 'TE']
-    },
     preference1: {
       type: String,
       required: [true, 'Preference 1 is required'],
       enum: [
-        'Marketing Head',
-        'Event Head',
-        'Creative head',
-        'Head Of Subcomm',
-        'Deputy Tech Head',
-        'Head of Public Relations',
-        'Head of Operations',
-        'Social Media Manager'
+        'Marketing',
+        'Creative',
+        'Public Relations',
+        'Operations',
+        'Technical'
       ]
     },
     preference2: {
       type: String,
       required: [true, 'Preference 2 is required'],
       enum: [
-        'Marketing Head',
-        'Event Head',
-        'Creative head',
-        'Head Of Subcomm',
-        'Deputy Tech Head',
-        'Head of Public Relations',
-        'Head of Operations',
-        'Social Media Manager'
+        'Marketing',
+        'Creative',
+        'Public Relations',
+        'Operations',
+        'Technical'
       ]
     },
     preference3: {
       type: String,
       required: [true, 'Preference 3 is required'],
       enum: [
-        'Marketing Head',
-        'Event Head',
-        'Creative head',
-        'Head Of Subcomm',
-        'Deputy Tech Head',
-        'Head of Public Relations',
-        'Head of Operations',
-        'Social Media Manager'
+        'Marketing',
+        'Creative',
+        'Public Relations',
+        'Operations',
+        'Technical'
       ]
     },
     motivation: {
@@ -121,18 +97,6 @@ const RegistrationSchema: Schema = new Schema(
       trim: true,
       maxlength: [500, 'Event idea cannot exceed 500 characters']
     },
-    resumeDriveLink: {
-      type: String,
-      trim: true,
-      validate: {
-        validator: function(v: string) {
-          if (!v) return true; // Optional field
-          // Validate Google Drive link format
-          return /^https:\/\/(drive\.google\.com|docs\.google\.com)\//.test(v);
-        },
-        message: 'Please provide a valid Google Drive link'
-      }
-    }
   },
   {
     timestamps: true, // This automatically adds createdAt and updatedAt fields
@@ -143,7 +107,6 @@ const RegistrationSchema: Schema = new Schema(
 
 // Add indexes for better query performance
 RegistrationSchema.index({ email: 1 });
-RegistrationSchema.index({ uid: 1 });
 RegistrationSchema.index({ createdAt: -1 });
 
 // Prevent model re-compilation during development

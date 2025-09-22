@@ -15,9 +15,7 @@ export async function POST(request: NextRequest) {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
-      uid: formData.get('uid') as string,
       branch: formData.get('branch') as string,
-      year: formData.get('year') as string,
       preference1: formData.get('preference1') as string,
       preference2: formData.get('preference2') as string,
       preference3: formData.get('preference3') as string,
@@ -25,12 +23,11 @@ export async function POST(request: NextRequest) {
       skills: formData.get('skills') as string,
       openToOtherCommittee: formData.get('openToOtherCommittee') as string,
       eventIdea: formData.get('eventIdea') as string,
-      resumeDriveLink: formData.get('resumeDriveLink') as string,
     };
 
     // Validate required fields
     const requiredFields = [
-      'name', 'email', 'phone', 'uid', 'branch', 'year',
+      'name', 'email', 'phone', 'branch',
       'preference1', 'preference2', 'preference3',
       'motivation', 'skills', 'openToOtherCommittee', 'eventIdea'
     ];
@@ -59,31 +56,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (registrationData.uid.length !== 10) {
-      return NextResponse.json(
-        { error: 'UID must be exactly 10 characters' },
-        { status: 400 }
-      );
-    }
-
-    // Validate Google Drive link if provided
-    if (registrationData.resumeDriveLink && 
-        !/^https:\/\/(drive\.google\.com|docs\.google\.com)\//.test(registrationData.resumeDriveLink)) {
-      return NextResponse.json(
-        { error: 'Please provide a valid Google Drive link' },
-        { status: 400 }
-      );
-    }
-
-    // Check if UID already exists
-    const existingRegistration = await Registration.findOne({ uid: registrationData.uid });
-    if (existingRegistration) {
-      return NextResponse.json(
-        { error: 'A registration with this UID already exists' },
-        { status: 409 }
-      );
-    }
-
     // Check if email already exists
     const existingEmail = await Registration.findOne({ email: registrationData.email });
     if (existingEmail) {
@@ -102,9 +74,7 @@ export async function POST(request: NextRequest) {
       id: registration._id,
       name: registration.name,
       email: registration.email,
-      uid: registration.uid,
       createdAt: registration.createdAt,
-      hasResume: !!registration.resumeDriveLink
     };
 
     return NextResponse.json(
