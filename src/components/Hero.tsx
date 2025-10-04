@@ -1,7 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
 
-const Hero = ({ onOpen }: { onOpen: () => void }) => {
+// COMMENTED OUT: Original Hero component with registration form functionality
+// const Hero = ({ onOpen }: { onOpen: () => void }) => {
+// Updated Hero component for forms closed state
+const Hero = () => {
   return (
     <main className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-6 relative z-5">
       <motion.div
@@ -48,7 +51,8 @@ const Hero = ({ onOpen }: { onOpen: () => void }) => {
           Empowering Innovation. Transforming Technologies. Inspiring Futures.
         </motion.p>
 
-        {/* CTA */}
+        {/* CTA - COMMENTED OUT: Original registration button */}
+        {/* 
         <motion.button
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -60,6 +64,17 @@ const Hero = ({ onOpen }: { onOpen: () => void }) => {
         >
           Join Our Committee
         </motion.button>
+        */}
+        
+        {/* NEW: Forms Closed Button */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          className="bg-gradient-to-tr from-slate-500 to-slate-700 text-slate-300 font-semibold px-8 py-3 rounded-full shadow-lg cursor-not-allowed opacity-70"
+        >
+          Registration Closed
+        </motion.div>
       </motion.div>
     </main>
   );
